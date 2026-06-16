@@ -1,0 +1,42 @@
+from flask import Flask, render_template_string, request
+
+app = Flask(__name__)
+
+def explain_topic(topic):
+    explanations = {
+        "python": "Python is a high-level programming language used for web development, AI, and data science.",
+        "ai": "Artificial Intelligence enables machines to learn and make decisions like humans.",
+        "machine learning": "Machine Learning is a branch of AI that learns from data.",
+        "java": "Java is an object-oriented programming language used for building applications."
+    }
+    return explanations.get(topic.lower(), f"Explanation for '{topic}' is not available.")
+
+HTML = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Study Buddy</title>
+</head>
+<body>
+    <h1>AI Study Buddy</h1>
+
+    <form method="POST">
+        <input type="text" name="topic" placeholder="Enter Topic">
+        <button type="submit">Explain</button>
+    </form>
+
+    <p>{{ result }}</p>
+</body>
+</html>
+"""
+
+@app.route("/", methods=["GET", "POST"])
+def home():
+    result = ""
+    if request.method == "POST":
+        topic = request.form["topic"]
+        result = explain_topic(topic)
+    return render_template_string(HTML, result=result)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080)
