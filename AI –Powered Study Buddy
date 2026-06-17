@@ -1,6 +1,4 @@
-from flask import Flask, render_template_string, request
-
-app = Flask(__name__)
+import streamlit as st
 
 def explain_topic(topic):
     explanations = {
@@ -11,32 +9,9 @@ def explain_topic(topic):
     }
     return explanations.get(topic.lower(), f"Explanation for '{topic}' is not available.")
 
-HTML = """
-<!DOCTYPE html>
-<html>
-<head>
-    <title>AI Study Buddy</title>
-</head>
-<body>
-    <h1>AI Study Buddy</h1>
+st.title("AI Study Buddy")
 
-    <form method="POST">
-        <input type="text" name="topic" placeholder="Enter Topic">
-        <button type="submit">Explain</button>
-    </form>
+topic = st.text_input("Enter Topic")
 
-    <p>{{ result }}</p>
-</body>
-</html>
-"""
-
-@app.route("/", methods=["GET", "POST"])
-def home():
-    result = ""
-    if request.method == "POST":
-        topic = request.form["topic"]
-        result = explain_topic(topic)
-    return render_template_string(HTML, result=result)
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+if st.button("Explain"):
+    st.write(explain_topic(topic))
