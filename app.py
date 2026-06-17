@@ -1,17 +1,24 @@
 import streamlit as st
+from openai import OpenAI
 
-def explain_topic(topic):
-    explanations = {
-        "python": "Python is a high-level programming language used for web development, AI, and data science.",
-        "ai": "Artificial Intelligence enables machines to learn and make decisions like humans.",
-        "machine learning": "Machine Learning is a branch of AI that learns from data.",
-        "java": "Java is an object-oriented programming language used for building applications."
-    }
-    return explanations.get(topic.lower(), "No explanation found.")
+# Create client (we will add API key next)
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-st.title("AI Study Buddy")
+st.title("AI Study Buddy 🤖")
 
-topic = st.text_input("Enter Topic")
+topic = st.text_input("Ask me anything")
 
-if st.button("Explain"):
-    st.write(explain_topic(topic))
+if st.button("Get Answer"):
+    if topic:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You are a helpful study tutor for students."},
+                {"role": "user", "content": topic}
+            ]
+        )
+
+        answer = response.choices[0].message.content
+        st.write(answer)
+    else:
+        st.write("Please enter a question")
